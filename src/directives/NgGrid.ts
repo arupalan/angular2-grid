@@ -45,6 +45,8 @@ export class NgGrid implements OnInit, DoCheck, OnDestroy {
 	public cascade: string = 'up';
 	public minWidth: number = 100;
 	public minHeight: number = 100;
+	public zIndex: number = 1;
+	public allowOverlap: boolean = false;
 
 	//	Private variables
 	private _items: Array<NgGridItem> = [];
@@ -97,6 +99,7 @@ export class NgGrid implements OnInit, DoCheck, OnDestroy {
 		maintain_ratio: false,
 		prefer_new: false,
 		zoom_on_drag: false,
+		allowOverlap: false
 	};
 	private _config = NgGrid.CONST_DEFAULT_CONFIG;
 
@@ -208,6 +211,9 @@ export class NgGrid implements OnInit, DoCheck, OnDestroy {
 						this._maxCols = this._getContainerColumns();
 					}
 					break;
+				case 'allow_overlap':
+					this.allowOverlap = val ? true : false;
+					break;					
 			}
 		}
 
@@ -344,6 +350,7 @@ export class NgGrid implements OnInit, DoCheck, OnDestroy {
 		}
 
 		if (this._destroyed) return;
+		if(this.allowOverlap) return;
 
 		this._cascadeGrid();
 		this._updateSize();
@@ -809,6 +816,9 @@ export class NgGrid implements OnInit, DoCheck, OnDestroy {
 	}
 
 	private _fixGridCollisions(pos: NgGridItemPosition, dims: NgGridItemSize): void {
+		if(this.allowOverlap) {
+			return;
+		}
 		while (this._hasGridCollision(pos, dims)) {
 			const collisions: Array<NgGridItem> = this._getCollisions(pos, dims);
 
@@ -851,6 +861,9 @@ export class NgGrid implements OnInit, DoCheck, OnDestroy {
 
 	private _cascadeGrid(pos?: NgGridItemPosition, dims?: NgGridItemSize): void {
 		if (this._destroyed) return;
+		if(this.allowOverlap) {
+			return;
+		}		
 		if (pos && !dims) throw new Error('Cannot cascade with only position and not dimensions');
 
 		if (this.isDragging && this._draggingItem && !pos && !dims) {
@@ -1059,6 +1072,9 @@ export class NgGrid implements OnInit, DoCheck, OnDestroy {
 	}
 
 	private _addToGrid(item: NgGridItem): void {
+		if( (this.isDragging || this.isResizing) && this.allowOverlap) {
+			return;
+		}
 		let pos: NgGridItemPosition = item.getGridPosition();
 		const dims: NgGridItemSize = item.getSize();
 

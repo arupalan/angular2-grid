@@ -115,6 +115,7 @@ export class NgGridItem implements OnInit, OnDestroy {
 
 	public onResizeStartEvent(): void {
 		const event: NgGridItemEvent = this.getEventOutput();
+		this._renderer.setElementStyle(this._ngEl.nativeElement, "z-index", String(++this._ngGrid.zIndex));
 		this.onResizeStart.emit(event);
 		this.onResizeAny.emit(event);
 		this.onChangeStart.emit(event);
@@ -140,6 +141,7 @@ export class NgGridItem implements OnInit, OnDestroy {
 	}
 	public onDragStartEvent(): void {
 		const event: NgGridItemEvent = this.getEventOutput();
+		this._renderer.setElementStyle(this._ngEl.nativeElement, "z-index", String(++this._ngGrid.zIndex));
 		this.onDragStart.emit(event);
 		this.onDragAny.emit(event);
 		this.onChangeStart.emit(event);
